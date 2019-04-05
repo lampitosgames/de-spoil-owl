@@ -8,12 +8,18 @@
     "start-client": "react-scripts start",
     "start-server": "nodemon --watch ./server ./server/app.js",
     "build": "react-scripts build",
-    "pretest": "eslint ./server ./src --fix",
+    "pretest": "eslint ./server ./src/*.js* --fix",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-redis": "^3.4.1",
+    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.4.22",
+    "node-sass": "^4.11.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "2.1.8"
@@ -25,5 +31,11 @@
     "eslint-config-react": "^1.1.7",
     "eslint-plugin-import": "^2.16.0",
     "nodemon": "^1.18.10"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
