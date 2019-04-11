@@ -2,6 +2,7 @@
 
 # auth data
 client_secret.json
+.env
 
 # dependencies
 /node_modules
