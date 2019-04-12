@@ -52,7 +52,8 @@ const getNewRows = (_step) => {
       video: r.video,
       thumb: r.thumb,
     }));
-    // Ensure all videos are unique and new on the server
+
+    // Ensure all videos are unique, video types we want, and new on the server
     const nameMap = new Map();
     rawRowData.forEach((row) => {
       // Ensure uniqueness of incoming data (ignore duplicate rows that sometimes sneak in)
@@ -60,13 +61,11 @@ const getNewRows = (_step) => {
       nameMap.set(row.title, true);
 
       // Check with regex to make sure its something we want
-      const shouldNotKeepRegex = /((Player)\s(Q&A))|([0-9]{4}\s(Season))/g;
-      if (shouldNotKeepRegex.test(row.title)) { return; }
+      const shouldKeepRegex = /(Watchpoint:)|(Game\s[0-9])|(Full\sMatch)/g;
+      if (!shouldKeepRegex.test(row.title)) { return; }
 
       // Check and see if this title is already in our ordered list of rows
-      if (!state.existingRows.every(eRow => eRow.title !== row.title)) {
-        return;
-      }
+      if (!state.existingRows.every(eRow => eRow.title !== row.title)) { return; }
 
       // Push the unique, new row into the state
       state.rawRowData.push(row);
