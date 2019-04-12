@@ -1,9 +1,24 @@
 class OwlGame {
-  constructor(_title, _vidURL, _thumb) {
-    this.title = _title;
-    this.vidURL = _vidURL;
-    this.thumb = _thumb;
+  constructor(_rawData) {
+    this.title = _rawData.title;
+    this.video = _rawData.video;
+    this.thumb = _rawData.thumb;
   }
 }
 
-module.exports = OwlGame;
+class OwlMatch {
+  constructor(_rawData) {
+    this.title = _rawData.title;
+    this.thumb = _rawData.thumb;
+  }
+}
+
+class Watchpoint {
+  constructor(_rawData) {
+    this.title = _rawData.title;
+    this.video = _rawData.video;
+    this.thumb = _rawData.thumb;
+  }
+}
+
+module.exports = { OwlGame, OwlMatch, Watchpoint };
