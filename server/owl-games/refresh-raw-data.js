@@ -77,7 +77,7 @@ const getNewRows = (_step) => {
 /**
  * Builds game data from the google drive spreadsheet. Returns array of new data the server does
  * not know about.
- * @param  {Array} _existingRows Array of OWL game data. Must have a .title property to compare against
+ * @param  {Array} _existingRows Array of OWL game data. Needs a title property to compare against
  * @return {Array}               Array of new-to-the-server data from the spreadsheet (new items
  *                               that weren't in the existingRows list)
  */
@@ -85,19 +85,19 @@ const buildGameDataFromSpreadsheet = _existingRows => new Promise((resolve, reje
   // Initialize state
   state = initialState;
   state.existingRows = _existingRows;
-  //Execute async events in series
+  // Execute async events in series
   async.series([
     setupDoc,
     setupAuth,
     getInfoAndWorksheets,
     getNewRows,
   ], (_err) => {
-    //When the async series is done, if there is an error
+    // When the async series is done, if there is an error
     if (_err) {
-      //Reject because of error
+      // Reject because of error
       reject(_err);
     } else {
-      //Pass in final result to the resolve method of the promise
+      // Pass in final result to the resolve method of the promise
       resolve(state.rawRowData);
     }
   });

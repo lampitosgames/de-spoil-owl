@@ -1,0 +1,51 @@
+{
+  "teams": {
+    "longToShort": {
+      "Atlanta Reign": "ATL",
+      "Boston Uprising": "BOS",
+      "Chengdu Hunters": "CDH",
+      "Dallas Fuel": "DAL",
+      "Florida Mayhem": "FLA",
+      "Guangzhou Charge": "GZC",
+      "Hangzhou Spark": "HZS",
+      "Houston Outlaws": "HOU",
+      "London Spitfire": "LON",
+      "Los Angeles Gladiators": "GLA",
+      "Los Angeles Valiant": "VAL",
+      "New York Excelsior": "NYE",
+      "Paris Eternal": "PAR",
+      "Philadelphia Fusion": "PHI",
+      "San Francisco Shock": "SFS",
+      "Seoul Dynasty": "SEO",
+      "Shanghai Dragons": "SHD",
+      "Toronto Defiant": "TOR",
+      "Vancouver Titans": "VAN",
+      "Washington Justice": "WAS"
+    },
+    "shortToLong": {
+      "ATL": "Atlanta Reign",
+      "BOS": "Boston Uprising",
+      "CDH": "Chengdu Hunters",
+      "DAL": "Dallas Fuel",
+      "FLA": "Florida Mayhem",
+      "GZC": "Guangzhou Charge",
+      "HZS": "Hangzhou Spark",
+      "HOU": "Houston Outlaws",
+      "LON": "London Spitfire",
+      "GLA": "Los Angeles Gladiators",
+      "VAL": "Los Angeles Valiant",
+      "NYE": "New York Excelsior",
+      "PAR": "Paris Eternal",
+      "PHI": "Philadelphia Fusion",
+      "SFS": "San Francisco Shock",
+      "SEO": "Seoul Dynasty",
+      "SHD": "Shanghai Dragons",
+      "TOR": "Toronto Defiant",
+      "VAN": "Vancouver Titans",
+      "WAS": "Washington Justice"
+    }
+  },
+  "matches": {
+    "Stage 1": {}
+  }
+}
