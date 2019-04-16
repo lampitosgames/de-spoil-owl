@@ -7,7 +7,7 @@ const dayReg = /(Day\s[0-9])/g;
 const playoffReg = /(Stage\s[0-9]\sPlayoffs)/g;
 const finalsReg = /(Stage\s[0-9]\sFinals)/g;
 
-const toNum = _str => parseInt(_str.match(numReg)[0]);
+const toNum = _str => parseInt(_str.match(numReg)[0], 10);
 
 const handleSWDForPlayoffs = (_title, _finalString) => {
   const swdArr = [-1, -2, -1];
@@ -54,6 +54,29 @@ const getStageWeekDay = (_title) => {
   return swdArr;
 };
 
+/**
+ * Tests to see if a match's data was built successfully. Data is entered by humans so
+ * error will always creep in. Filter it out
+ * @param  {OwlMatch}  _match a built OwlMatch object to test
+ * @return {Boolean}          whether or not the match was built correctly
+ */
+const isValidMatch = (_match) => {
+  // Valid until proven otherwise
+  let isValid = true;
+  // Ensure it exists
+  isValid = _match !== null && _match !== undefined;
+  // Does it have a valid game date?
+  isValid = _match.gameDate[0] !== -1 && _match.gameDate[1] !== -1 && _match.gameDate[2] !== -1;
+  if (!isValid) return isValid;
+  // Are both teams listed?
+  isValid = _match.team1 !== undefined && _match.team2 !== undefined;
+  if (!isValid) return isValid;
+  // Are there at least 5 child games?
+  isValid = _match.games.length >= 5;
+  if (!isValid) return isValid;
+  return true;
+};
+
 class OwlGame {
   constructor(_rawData) {
     this.title = _rawData.title;
@@ -62,9 +85,7 @@ class OwlGame {
     this.gameDate = getStageWeekDay(this.title);
     this.parentMatch = null;
     // Get the teams
-    const teams = this.title.split(' ');
-    this.team1 = teams[2];
-    this.team2 = teams[4];
+    [, , this.team1, , this.team2] = this.title.split(' ');
   }
 
   setParentMatch(_parent) {
@@ -100,4 +121,9 @@ class OwlWatchpoint {
   }
 }
 
-module.exports = { OwlGame, OwlMatch, OwlWatchpoint };
+module.exports = {
+  OwlGame,
+  OwlMatch,
+  OwlWatchpoint,
+  isValidMatch,
+};

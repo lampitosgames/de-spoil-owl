@@ -2,10 +2,10 @@
   "name": "de-spoil-owl",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "concurrently \"npm run start-client\" \"npm run start-server\"",
-    "start-client": "react-scripts start",
+    "start-client": "set PORT=8080 && react-scripts start",
     "start-server": "nodemon --watch ./server ./server/app.js",
     "build": "react-scripts build",
     "pretest": "eslint ./server ./src/*.js* --fix",
@@ -16,8 +16,10 @@
   "dependencies": {
     "async": "^2.6.2",
     "body-parser": "^1.18.3",
+    "compression": "^1.7.4",
     "connect-redis": "^3.4.1",
     "cookie-parser": "^1.4.4",
+    "csurf": "^1.9.0",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
@@ -26,6 +28,7 @@
     "node-sass": "^4.11.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8"
   },
   "devDependencies": {

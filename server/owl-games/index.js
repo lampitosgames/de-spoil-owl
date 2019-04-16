@@ -1,19 +1,23 @@
 /*
-Notes about naming:
+Notes about data coming in from the Twitch/IFTTT API:
 * No naming convention for season playoffs.  We'll have to work on that
 * All abbreviated titles for stage playoffs are "Stage X Finals"
 * Watchpoint during stage finals is "Stage X Finals | Day X"
 * Full game titles "Stage X Playoffs | Day X"
 * The actual final is titled "Stage X Final | Day X"
  */
-const fs = require('fs');
-const { OwlGame, OwlMatch, OwlWatchpoint } = require('./owl-game.js');
+const {
+  OwlGame,
+  OwlMatch,
+  OwlWatchpoint,
+  isValidMatch,
+} = require('./owl-game.js');
 const { buildGameDataFromSpreadsheet } = require('./refresh-raw-data.js');
-//const owlMetadata = require('./owl-metadata.json');
+// const owlMetadata = require('./owl-metadata.json');
 
 // When the server starts, no videos have been loaded
 const videos = {};
-const matches = {};
+let matches = {};
 
 const makeVideoObject = (_rawData) => {
   // 3 different regex expressions to identify the type of video
@@ -32,6 +36,7 @@ const makeVideoObject = (_rawData) => {
   if (watchpReg.test(_rawData.title)) {
     return new OwlWatchpoint(_rawData);
   }
+  return null;
 };
 
 const findAllMatchGames = (_match) => {
@@ -43,10 +48,10 @@ const findAllMatchGames = (_match) => {
     // Only search owl games.  They're the only thing that can be children
     if (game.constructor.name !== 'OwlGame') { return; }
     if (
-      game.gameDate[0] === _match.gameDate[0] &&
-      game.gameDate[1] === _match.gameDate[1] &&
-      game.team1 === _match.team1 &&
-      game.team2 === _match.team2
+      game.gameDate[0] === _match.gameDate[0]
+      && game.gameDate[1] === _match.gameDate[1]
+      && game.team1 === _match.team1
+      && game.team2 === _match.team2
     ) {
       _match.addGame(game);
     }
@@ -77,19 +82,22 @@ const findAllMatchGames = (_match) => {
 
 const regenGameData = () => {
   buildGameDataFromSpreadsheet(Object.values(videos)).then((rawDataArr) => {
+    matches = {};
     rawDataArr.forEach((rawData) => {
-      let thisVid = makeVideoObject(rawData);
+      const thisVid = makeVideoObject(rawData);
       videos[thisVid.title] = thisVid;
     });
     Object.values(matches).forEach((match) => {
       findAllMatchGames(match);
+      // Ensure that the match's data was built correctly
+      if (!isValidMatch(match)) {
+        // If it was not built correctly, delete it
+        delete matches[match.title];
+      }
     });
-    console.dir(matches);
-    let outJSON = JSON.stringify(matches);
-    fs.writeFile('testingJson.json', outJSON);
   });
-}
+};
 
-regenGameData();
+const getMatches = () => matches;
 
-module.exports = { regenGameData }
+module.exports = { regenGameData, getMatches };
