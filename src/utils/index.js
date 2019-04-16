@@ -1,6 +1,30 @@
 const csrf = {
-  token: ""
+  token: "",
+  isValid: false
 };
+
+const isLoggedIn = () => {
+  return csrf.isValid;
+}
+//Custom event listeners
+const loginChangeListeners = [];
+const logoutChangeListeners = [];
+const on = {
+  login: (callback) => {
+    loginChangeListeners.push(callback);
+  },
+  logout: (callback) => {
+    logoutChangeListeners.push(callback);
+  }
+}
+const trigger = {
+  login: () => {
+    loginChangeListeners.forEach(list => list());
+  },
+  logout: () => {
+    logoutChangeListeners.forEach(list => list());
+  }
+}
 
 /**
  * Make a get request
@@ -21,7 +45,7 @@ const get = (url, data) => new Promise((resolve, reject) => {
     if (xhr.responseText && xhr.responseText[0] === "{") {
       response = JSON.parse(xhr.responseText);
     }
-    if (xhr.status === 200) {
+    if (xhr.status === 200 || xhr.status === 204) {
       resolve(response);
     } else {
       reject(xhr);
@@ -63,4 +87,15 @@ const post = (url, body) => new Promise((resolve, reject) => {
   xhr.send(JSON.stringify(body));
 });
 
-module.exports = { get, post, csrf };
+
+const validateToken = () => {
+  return get('/checkToken', {}).then((result) => {
+    csrf.isValid = true;
+    trigger.login();
+  }).catch((err) => {
+    csrf.isValid = false;
+    trigger.logout();
+  });
+}
+
+module.exports = { on, trigger, get, post, csrf, validateToken, isLoggedIn };

@@ -9,6 +9,7 @@ const getToken = () => {
   Utils.get('/getToken', {}).then((result) => {
     // Save the token
     Utils.csrf.token = result.csrfToken;
+    Utils.validateToken();
     // Render the app
     ReactDOM.render(<App />, document.getElementById('root'));
   }).catch(err => console.dir(`Failed to get csrf token: ${err}`));

@@ -27,6 +27,7 @@ export default class Login extends React.Component {
     };
     Utils.post('/login', body).then(() => {
       this.setState({ loggedIn: true });
+      Utils.trigger.login();
     }).catch((res) => {
       //TODO: Handle error
       console.dir(res);
@@ -43,7 +44,7 @@ export default class Login extends React.Component {
 
   render() {
     if (this.state.loggedIn) {
-      return <Redirect to="/"/>
+      return <Redirect to="/"/>;
     } else {
       return (
         <form onSubmit={this.handleLogin} className="loginForm">
