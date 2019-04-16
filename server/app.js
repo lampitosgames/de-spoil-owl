@@ -51,7 +51,7 @@ app.use(session({
     httpOnly: true,
   },
 }));
-app.use(cookieParser());
+app.use(cookieParser('secret'));
 app.disable('x-powered-by');
 app.use(csrf());
 app.use((err, req, res, next) => {

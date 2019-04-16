@@ -3,6 +3,13 @@ const controllers = require('./controllers');
 const mid = require('./middleware');
 
 const router = (app) => {
+  //Is the user authenticated?
+  app.get('/checkToken', mid.requiresSecure, (req, res) => {
+    if (!req.session.account) {
+      return res.sendStatus(401);
+    }
+    return res.sendStatus(200);
+  })
   // Login endpoint
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
   // Signup endpoint

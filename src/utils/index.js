@@ -18,7 +18,7 @@ const get = (url, data) => new Promise((resolve, reject) => {
     // On load, grab the response (if it exists) and resolve or reject the promise
     // based on the status code
     let response = { message: '' };
-    if (xhr.responseText) {
+    if (xhr.responseText && xhr.responseText[0] === "{") {
       response = JSON.parse(xhr.responseText);
     }
     if (xhr.status === 200) {

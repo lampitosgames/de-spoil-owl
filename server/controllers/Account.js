@@ -13,6 +13,7 @@ const login = (req, res) => {
       return res.status(401).json({ message: 'Wrong username or password!' });
     }
     req.session.account = Account.AccountModel.toAPI(account);
+    res.cookie('loggedInAs', req.session.account.username, { signed: true, httpOnly: true });
     return res.status(204).end();
   });
 };
@@ -67,5 +68,8 @@ const getToken = (_req, _res) => {
 };
 
 module.exports = {
-  login, logout, signup, getToken,
+  login,
+  logout,
+  signup,
+  getToken,
 };
