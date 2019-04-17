@@ -6,6 +6,7 @@ const weekReg = /(Week\s[0-9])/g;
 const dayReg = /(Day\s[0-9])/g;
 const playoffReg = /(Stage\s[0-9]\sPlayoffs)/g;
 const finalsReg = /(Stage\s[0-9]\sFinals)/g;
+const gameNumberReg = /(Game\s)[0-9]/g;
 
 const toNum = _str => parseInt(_str.match(numReg)[0], 10);
 
@@ -86,6 +87,9 @@ class OwlGame {
     this.parentMatch = null;
     // Get the teams
     [, , this.team1, , this.team2] = this.title.split(' ');
+    //Get the game number
+    const [titleMatch] = this.title.match(gameNumberReg);
+    this.gameNumber = toNum(titleMatch.split(' ')[1]);
   }
 
   setParentMatch(_parent) {
