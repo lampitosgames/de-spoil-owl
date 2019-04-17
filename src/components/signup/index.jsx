@@ -35,10 +35,10 @@ export default class Signup extends React.Component {
       //Sign up
       Utils.post('/signup', body).then(() => {
         //After they sign up, log them in and change the local state so the route refreshes
-        Utils.get('/login', body).then(() => {
+        Utils.post('/login', body).then(() => {
           Utils.trigger.login();
+          this.setState({ createdAccount: true });
         });
-        this.setState({ createdAccount: true });
       });
     }).catch((res) => {
       //TODO: Handle error
@@ -60,15 +60,30 @@ export default class Signup extends React.Component {
 
   render() {
     if (this.state.createdAccount) {
-      return <Redirect to="/"/>
+      return <Redirect to = "/" / >
     } else {
-      return (
-        <form onSubmit={this.handleSignup} className="signupForm">
-          <label>Username: <input type="text" value={this.state.username} placeholder="username" onChange={this.usernameChange}/></label>
-          <label>Password: <input type="password" value={this.state.password} placeholder="password" onChange={this.passwordChange}/></label>
-          <label>Password: <input type="password" value={this.state.password2} placeholder="confirm password" onChange={this.password2Change}/></label>
-          <input type="submit" value="Sign Up"/>
-        </form>
+      return ( <
+        form onSubmit = { this.handleSignup } className = "signupForm" >
+        <
+        label > Username: < input type = "text"
+        value = { this.state.username } placeholder = "username"
+        onChange = { this.usernameChange }
+        /></label >
+        <
+        label > Password: < input type = "password"
+        value = { this.state.password } placeholder = "password"
+        onChange = { this.passwordChange }
+        /></label >
+        <
+        label > Password: < input type = "password"
+        value = { this.state.password2 } placeholder = "confirm password"
+        onChange = { this.password2Change }
+        /></label >
+        <
+        input type = "submit"
+        value = "Sign Up" / >
+        <
+        /form>
       );
     }
   }

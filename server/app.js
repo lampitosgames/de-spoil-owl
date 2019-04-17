@@ -12,7 +12,7 @@ const csrf = require('csurf');
 const router = require('./router.js');
 const { regenGameData } = require('./owl-games');
 
-const port = process.env.PORT || process.env.NODE_PORT || 3000;
+const port = process.env.PORT || process.env.NODE_PORT || 8080;
 const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/de-spoil-owl';
 
 mongoose.connect(dbURL, (err) => {

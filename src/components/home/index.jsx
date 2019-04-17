@@ -53,7 +53,7 @@ export default class Home extends React.Component {
     }).catch((err) => { console.dir(err); })
   }
 
-  favoriteToggle(isFavorited) {
+  favoriteToggle(matchName, isFavorited) {
     console.log("Favorited!");
   }
 
