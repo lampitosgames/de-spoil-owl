@@ -1,5 +1,6 @@
 const models = require('../models');
 const { getMatches } = require('../owl-games');
+
 const { SavedMatch } = models;
 
 const saveMatch = (req, res) => {
@@ -24,9 +25,8 @@ const saveMatch = (req, res) => {
 const getAllMatches = (req, res) => {
   if (getMatches() !== {}) {
     return res.json(getMatches());
-  } else {
-    return res.json({ error: "No matches found" });
   }
-}
+  return res.json({ error: 'No matches found' });
+};
 
 module.exports = { saveMatch, getAllMatches };

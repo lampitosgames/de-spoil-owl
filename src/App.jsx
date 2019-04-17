@@ -6,25 +6,16 @@ import Home from './components/home';
 import Login from './components/login';
 import Signup from './components/signup';
 import Header from './components/header';
-import Utils from './utils';
 
-const initialState = {
-  loggedIn: false,
-};
-
-class AppRouter extends React.Component {
-  render() {
-    return (
-      <Router>
-        <div>
-          <Header />
-          <Route exact path="/" component={Home} />
-          <Route exact path="/login" component={withAuth(Login, false)} />
-          <Route exact path="/signup" component={withAuth(Signup, false)} />
-        </div>
-      </Router>
-    );
-  }
-}
+const AppRouter = () => (
+  <Router>
+    <div>
+      <Header />
+      <Route exact path="/" component={Home} />
+      <Route exact path="/login" component={withAuth(Login, false)} />
+      <Route exact path="/signup" component={withAuth(Signup, false)} />
+    </div>
+  </Router>
+);
 
 export default AppRouter;

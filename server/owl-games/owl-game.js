@@ -87,7 +87,7 @@ class OwlGame {
     this.parentMatch = null;
     // Get the teams
     [, , this.team1, , this.team2] = this.title.split(' ');
-    //Get the game number
+    // Get the game number
     const [titleMatch] = this.title.match(gameNumberReg);
     this.gameNumber = toNum(titleMatch.split(' ')[1]);
   }
