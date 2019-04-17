@@ -20,6 +20,9 @@ const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
   // Endpoint for users to save a match to their "watch later" playlist
   app.post('/saveMatch', mid.requiresSecure, mid.requiresLogin, controllers.SavedMatch.saveMatch);
+  //Endpoint to fetch all matches on the server
+  //TODO: Pagination
+  app.get('/allMatches', mid.requiresSecure, controllers.SavedMatch.getAllMatches);
   // Client-side will handle react routing.  Any non-api path will resolve to index.html
   app.get('*', mid.requiresSecure, (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));

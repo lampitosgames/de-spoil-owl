@@ -28,9 +28,18 @@ export default class Signup extends React.Component {
       "password": this.state.password,
       "password2": this.state.password2,
     };
-
-    Utils.post('/signup', body).then(() => {
-      this.setState({ createdAccount: true });
+    //Ensure they have a valid auth token
+    Utils.get('/getToken', {}).then((result) => {
+      // Save the token
+      Utils.csrf.token = result.csrfToken;
+      //Sign up
+      Utils.post('/signup', body).then(() => {
+        //After they sign up, log them in and change the local state so the route refreshes
+        Utils.get('/login', body).then(() => {
+          Utils.trigger.login();
+        });
+        this.setState({ createdAccount: true });
+      });
     }).catch((res) => {
       //TODO: Handle error
       console.dir(res);

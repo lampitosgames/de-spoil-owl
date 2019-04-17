@@ -25,9 +25,14 @@ export default class Login extends React.Component {
       "username": this.state.username,
       "password": this.state.password,
     };
-    Utils.post('/login', body).then(() => {
-      this.setState({ loggedIn: true });
-      Utils.trigger.login();
+    //Refresh the token on login in case it was destroyed
+    Utils.get('/getToken', {}).then((result) => {
+      // Save the token
+      Utils.csrf.token = result.csrfToken;
+      Utils.post('/login', body).then(() => {
+        this.setState({ loggedIn: true });
+        Utils.trigger.login();
+      });
     }).catch((res) => {
       //TODO: Handle error
       console.dir(res);

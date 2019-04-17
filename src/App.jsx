@@ -2,12 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import './App.scss';
 import { withAuth } from './components/auth-wrapper';
+import Home from './components/home';
 import Login from './components/login';
 import Signup from './components/signup';
 import Header from './components/header';
 import Utils from './utils';
-
-const Home = () => <h2>Home</h2>;
 
 const initialState = {
   loggedIn: false,

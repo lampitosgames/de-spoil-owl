@@ -89,7 +89,7 @@ class OwlGame {
   }
 
   setParentMatch(_parent) {
-    this.parent = _parent;
+    this.parent = _parent.title;
   }
 }
 
