@@ -1,6 +1,7 @@
 const csrf = {
   token: "",
-  isValid: false
+  isValid: false,
+  account: {}
 };
 
 const isLoggedIn = () => {
@@ -91,6 +92,7 @@ const post = (url, body) => new Promise((resolve, reject) => {
 const validateToken = () => {
   return get('/checkToken', {}).then((result) => {
     csrf.isValid = true;
+    csrf.account = result.account;
     trigger.login();
   }).catch((err) => {
     csrf.isValid = false;

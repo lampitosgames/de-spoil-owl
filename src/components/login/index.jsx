@@ -32,7 +32,7 @@ export default class Login extends React.Component {
       Utils.post('/login', body).then(() => {
         this.setState({ loggedIn: true });
         Utils.trigger.login();
-      });
+      }).catch();
     }).catch((res) => {
       //TODO: Handle error
       console.dir(res);

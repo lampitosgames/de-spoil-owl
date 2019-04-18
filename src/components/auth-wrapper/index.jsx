@@ -19,6 +19,7 @@ export const withAuth = (ComponentToProtect, authNeeded) => {
     componentDidMount() {
       Utils.get('/checkToken', {}).then((res) => {
         this.setState({ loading: false, redirect: !authNeeded });
+        Utils.csrf.account = res.account;
       }).catch((err) => {
         this.setState({ loading: false, redirect: authNeeded });
       });

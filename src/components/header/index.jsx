@@ -21,6 +21,7 @@ export default class Header extends React.Component {
 
   handleLogout() {
     Utils.get('/logout', {}).then(() => {
+      console.dir('test');
       Utils.trigger.logout();
     }).catch((err) => { console.dir(err); })
   }
