@@ -2,12 +2,10 @@ import Utils from '../../utils';
 import React from 'react';
 import Match from '../match';
 
-//Set default sort order.  pulled out into a local var so it can be connected to an endpoint later
-let sortNewestOldest = true;
-
 const initialState = {
   loggedIn: false,
-  matches: []
+  matches: [],
+  listenerKey: "home"
 };
 
 const matchSort = (a, b) => {
@@ -43,8 +41,13 @@ export default class Home extends React.Component {
       .then((allGames) => {
         this.setState({ matches: Object.values(allGames).sort(matchSort) })
       }).catch((err) => { console.error(err); });
-    Utils.on.login(() => this.setState({ loggedIn: true }));
-    Utils.on.logout(() => this.setState({ loggedIn: false }));
+    Utils.on.login(this.state.listenerKey, () => this.setState({ loggedIn: true }));
+    Utils.on.logout(this.state.listenerKey, () => this.setState({ loggedIn: false }));
+  }
+
+  componentWillUnmount() {
+    Utils.unsubscribe.login(this.state.listenerKey);
+    Utils.unsubscribe.logout(this.state.listenerKey);
   }
 
   handleLogout() {

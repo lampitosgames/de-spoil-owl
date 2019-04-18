@@ -8,22 +8,30 @@ const isLoggedIn = () => {
   return csrf.isValid;
 }
 //Custom event listeners
-const loginChangeListeners = [];
-const logoutChangeListeners = [];
+const loginChangeListeners = {};
+const logoutChangeListeners = {};
 const on = {
-  login: (callback) => {
-    loginChangeListeners.push(callback);
+  login: (listenerKey, callback) => {
+    loginChangeListeners[listenerKey] = callback;
   },
-  logout: (callback) => {
-    logoutChangeListeners.push(callback);
+  logout: (listenerKey, callback) => {
+    logoutChangeListeners[listenerKey] = callback;
   }
 }
 const trigger = {
   login: () => {
-    loginChangeListeners.forEach(list => list());
+    Object.values(loginChangeListeners).forEach(list => list());
   },
   logout: () => {
-    logoutChangeListeners.forEach(list => list());
+    Object.values(logoutChangeListeners).forEach(list => list());
+  }
+}
+const unsubscribe = {
+  login: (listenerKey) => {
+    delete loginChangeListeners[listenerKey];
+  },
+  logout: (listenerKey) => {
+    delete logoutChangeListeners[listenerKey];
   }
 }
 
@@ -91,13 +99,16 @@ const post = (url, body) => new Promise((resolve, reject) => {
 
 const validateToken = () => {
   return get('/checkToken', {}).then((result) => {
-    csrf.isValid = true;
-    csrf.account = result.account;
-    trigger.login();
-  }).catch((err) => {
-    csrf.isValid = false;
-    trigger.logout();
-  });
+    if (!result.validToken) {
+      csrf.isValid = false;
+      trigger.logout();
+    } else {
+      csrf.isValid = true;
+      csrf.account = result.account;
+      trigger.login();
+    }
+    return result;
+  }).catch((err) => console.error(err));
 }
 
-module.exports = { on, trigger, get, post, csrf, validateToken, isLoggedIn };
+module.exports = { on, trigger, unsubscribe, get, post, csrf, validateToken, isLoggedIn };

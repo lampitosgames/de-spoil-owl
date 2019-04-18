@@ -4,7 +4,8 @@ import './header.scss';
 import Utils from '../../utils';
 
 const initialState = {
-  loggedIn: false
+  loggedIn: false,
+  listenerKey: "header",
 };
 
 export default class Header extends React.Component {
@@ -15,13 +16,17 @@ export default class Header extends React.Component {
   }
 
   componentDidMount() {
-    Utils.on.login(() => this.setState({ loggedIn: true }));
-    Utils.on.logout(() => this.setState({ loggedIn: false }));
+    Utils.on.login(this.state.listenerKey, () => this.setState({ loggedIn: true }));
+    Utils.on.logout(this.state.listenerKey, () => this.setState({ loggedIn: false }));
+  }
+
+  componentWillUnmount() {
+    Utils.unsubscribe.login(this.state.listenerKey);
+    Utils.unsubscribe.logout(this.state.listenerKey);
   }
 
   handleLogout() {
     Utils.get('/logout', {}).then(() => {
-      console.dir('test');
       Utils.trigger.logout();
     }).catch((err) => { console.dir(err); })
   }
@@ -34,7 +39,7 @@ export default class Header extends React.Component {
         {this.state.loggedIn ? "" : <Link to="/signup">Sign Up</Link>}
         {!this.state.loggedIn ? "" : <Link to="/watchLater">Watch Later</Link>}
         {!this.state.loggedIn ? "" : <Link to="/account">Account Settings</Link>}
-        {!this.state.loggedIn ? "" : <a onClick={this.handleLogout}>Log Out</a>}
+        {!this.state.loggedIn ? "" : <div onClick={this.handleLogout}>Log Out</div>}
       </div>
     )
   }

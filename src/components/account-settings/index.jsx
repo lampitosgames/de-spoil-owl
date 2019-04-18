@@ -4,7 +4,8 @@ import PasswordForm from './password-form';
 import Utils from '../../utils';
 
 const initialState = {
-  loggedOut: false
+  loggedOut: false,
+  listenerKey: "account-settings"
 }
 
 export default class AccountSettings extends React.Component {
@@ -16,7 +17,11 @@ export default class AccountSettings extends React.Component {
   }
 
   componentDidMount() {
-    Utils.on.logout(() => this.setState({ loggedOut: true }));
+    Utils.on.logout(this.state.listenerKey, () => this.setState({ loggedOut: true }));
+  }
+
+  componentWillUnmount() {
+    Utils.unsubscribe.logout(this.state.listenerKey);
   }
 
   dispatchSettings(updateData) {

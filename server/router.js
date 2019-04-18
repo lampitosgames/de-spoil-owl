@@ -22,9 +22,9 @@ const router = (app) => {
   // Is the user authenticated?
   app.get('/checkToken', mid.requiresSecure, (req, res) => {
     if (!req.session.account) {
-      return res.sendStatus(401);
+      return res.status(200).json({ validToken: false });
     }
-    return res.status(200).json({ account: req.session.account });
+    return res.status(200).json({ account: req.session.account, validToken: true });
   });
   // Endpoint to get a generated csrf token
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);

@@ -3,8 +3,8 @@ import './match.scss';
 
 const VideoLink = (props) => {
   return (
-    <a className="video-link" href={props.href} target="_blank">
-      <img className="video-link-image" src={props.thumbnail}/>
+    <a className="video-link" href={props.href} target="_blank" rel="noopener noreferrer">
+      <img alt="twitch.tv thumbnail for game" className="video-link-image" src={props.thumbnail}/>
     </a>
   );
 }
@@ -19,7 +19,6 @@ const gamesSort = (a, b) => {
 }
 
 const Match = (props) => {
-  let i = 0;
   const videos = props.match.games.sort(gamesSort).map((game) => {
     return (
       <div key={game.gameNumber} className="single-game">
