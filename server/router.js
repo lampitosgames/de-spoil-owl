@@ -13,10 +13,10 @@ const accountRouter = (app) => {
   app.post('/accountSettings', mid.requiresSecure, mid.requiresLogin, controllers.Account.accountSettings);
   // Delete account endpoint
   app.post('/deleteAccount', mid.requiresSecure, mid.requiresLogin, controllers.Account.deleteAccount);
-}
+};
 
 const router = (app) => {
-  //Call other router functions
+  // Call other router functions
   accountRouter(app);
 
   // Is the user authenticated?
@@ -37,7 +37,6 @@ const router = (app) => {
   app.get('*', mid.requiresSecure, (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
-
 };
 
 module.exports = router;

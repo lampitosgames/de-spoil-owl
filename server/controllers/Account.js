@@ -57,13 +57,15 @@ const signup = (req, res) => {
 // TODO: Add a deleteAccount endpoint
 const deleteAccount = (req, res) => {
   res.status(500).json({ error: 'Internal server error - not implemented' });
-}
+};
 // TODO: Add account settings
 const accountSettings = (req, res) => {
-  //Local scoped functions with individual calls into the account model
-  //Select based on request update type
+  // Local scoped functions with individual calls into the account model
+  // Select based on request update type
 
-  const updatePassword = ({ username, oldPassword, newPassword, newPassword2 }) => {
+  const updatePassword = ({
+    username, oldPassword, newPassword, newPassword2,
+  }) => {
     // const passUpdateData = { username, oldPassword, newPassword, newPassword2, formType }
     if (!username || !oldPassword || !newPassword || !newPassword2) {
       return res.status(400).json({ message: 'All fields required to log in' });
@@ -82,10 +84,10 @@ const accountSettings = (req, res) => {
         res.status(204).end();
       });
     });
-  }
+  };
 
   if (req.body.formType === 'update-password') { updatePassword(req.body); }
-}
+};
 
 const getToken = (_req, _res) => {
   const req = _req;
@@ -102,5 +104,5 @@ module.exports = {
   signup,
   getToken,
   deleteAccount,
-  accountSettings
+  accountSettings,
 };
