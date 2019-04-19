@@ -64,7 +64,10 @@ const accountSettings = (req, res) => {
   // Select based on request update type
 
   const updatePassword = ({
-    username, oldPassword, newPassword, newPassword2,
+    username,
+    oldPassword,
+    newPassword,
+    newPassword2,
   }) => {
     // const passUpdateData = { username, oldPassword, newPassword, newPassword2, formType }
     if (!username || !oldPassword || !newPassword || !newPassword2) {
@@ -77,10 +80,11 @@ const accountSettings = (req, res) => {
       if (err || !account) {
         return res.status(401).json({ message: 'Current password was incorrect' });
       }
+      const accountRef = account;
       return Account.AccountModel.generateHash(newPassword, (salt, hash) => {
-        account.salt = salt;
-        account.password = hash;
-        account.save();
+        accountRef.salt = salt;
+        accountRef.password = hash;
+        accountRef.save();
         res.status(204).end();
       });
     });

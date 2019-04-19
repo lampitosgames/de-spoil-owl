@@ -20,12 +20,12 @@ const savedMatchRouter = (app) => {
   app.post('/saveMatch', mid.requiresSecure, mid.requiresLogin, controllers.SavedMatch.saveMatch);
   // Endpoint for users to remove a match from their "watch later" playlist
   app.post('/removeMatch', mid.requiresSecure, mid.requiresLogin, controllers.SavedMatch.removeMatch);
-  //Endpoint to fetch all matches saved by a user
+  // Endpoint to fetch all matches saved by a user
   app.get('/getSavedMatches', mid.requiresSecure, mid.requiresLogin, controllers.SavedMatch.getSavedMatches);
   // Endpoint to fetch all matches on the server
   // TODO: Pagination
   app.get('/allMatches', mid.requiresSecure, controllers.SavedMatch.getAllMatches);
-}
+};
 
 const router = (app) => {
   // Call other router functions

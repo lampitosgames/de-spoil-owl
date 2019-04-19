@@ -20,7 +20,7 @@ const AppRouter = () => (
         <Route exact path="/login" component={withAuth(Login, false)} />
         <Route exact path="/signup" component={withAuth(Signup, false)} />
         <Route exact path="/account" component={withAuth(AccountSettings, true)} />
-        <Route component={NotFound}/>
+        <Route component={NotFound} />
       </Switch>
     </div>
   </Router>

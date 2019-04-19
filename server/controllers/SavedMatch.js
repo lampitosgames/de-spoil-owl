@@ -23,27 +23,27 @@ const saveMatch = (req, res) => {
 };
 
 const removeMatch = (req, res) => {
-  SavedMatch.SavedMatchModel.deleteMatch(req.session.account._id, req.body.title, (err, doc) => {
+  SavedMatch.SavedMatchModel.deleteMatch(req.session.account._id, req.body.title, (err) => {
     if (err) {
-      return res.status(500).json({ message: "Internal Server Error", error: err });
+      return res.status(500).json({ message: 'Internal Server Error', error: err });
     }
-    res.sendStatus(204);
+    return res.sendStatus(204);
   });
-}
+};
 
 const getSavedMatches = (req, res) => {
   SavedMatch.SavedMatchModel.findByOwner(req.session.account._id, (err, doc) => {
     if (err) {
-      return res.status(500).json({ message: "Internal Server Error", error: err });
+      return res.status(500).json({ message: 'Internal Server Error', error: err });
     }
-    let savedMatches = {};
+    const savedMatches = {};
     doc.forEach((match) => {
       const thisMatch = SavedMatch.SavedMatchModel.toAPI(match);
       savedMatches[thisMatch.title] = thisMatch;
     });
-    res.status(200).json(savedMatches);
+    return res.status(200).json(savedMatches);
   });
-}
+};
 
 const getAllMatches = (req, res) => {
   if (getMatches() !== {}) {
@@ -52,4 +52,9 @@ const getAllMatches = (req, res) => {
   return res.json({ error: 'No matches found' });
 };
 
-module.exports = { saveMatch, removeMatch, getAllMatches, getSavedMatches };
+module.exports = {
+  saveMatch,
+  removeMatch,
+  getAllMatches,
+  getSavedMatches,
+};
