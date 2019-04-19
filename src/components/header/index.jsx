@@ -33,13 +33,13 @@ export default class Header extends React.Component {
 
   render() {
     return (
-      <div>
-        <Link to="/">All Games</Link>
-        {this.state.loggedIn ? "" : <Link to="/login">Log In</Link>}
-        {this.state.loggedIn ? "" : <Link to="/signup">Sign Up</Link>}
-        {!this.state.loggedIn ? "" : <Link to="/watchLater">Watch Later</Link>}
-        {!this.state.loggedIn ? "" : <Link to="/account">Account Settings</Link>}
-        {!this.state.loggedIn ? "" : <div onClick={this.handleLogout}>Log Out</div>}
+      <div className="site-header">
+        <Link className="header-link" to="/">All Games</Link>
+        {this.state.loggedIn ? "" : <Link className="header-link" to="/login">Log In</Link>}
+        {this.state.loggedIn ? "" : <Link className="header-link" to="/signup">Sign Up</Link>}
+        {!this.state.loggedIn ? "" : <Link className="header-link" to="/watchLater">Watch Later</Link>}
+        {!this.state.loggedIn ? "" : <Link className="header-link" to="/account">Account Settings</Link>}
+        {!this.state.loggedIn ? "" : <span className="header-link" onClick={this.handleLogout}>Log Out</span>}
       </div>
     )
   }

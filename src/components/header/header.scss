@@ -1,0 +1,21 @@
+.site-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.header-link {
+  font-size: 3rem;
+  text-decoration: none;
+  padding: 15px 20px 20px;
+  color: black;
+  cursor: pointer;
+  font-size: bold;
+  font-family: 'Big Noodle', sans-serif;
+}
+
+.header-link:hover {
+  color: #ff8900;
+}
