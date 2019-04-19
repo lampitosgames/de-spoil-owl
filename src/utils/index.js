@@ -1,29 +1,43 @@
+//STATE STORAGE
 const csrf = {
   token: "",
   isValid: false,
+  isLoggedIn: false,
   account: {}
 };
+let allMatches = {};
+let watchLaterMatches = {};
+
 
 const isLoggedIn = () => {
-  return csrf.isValid;
+  return csrf.isLoggedIn;
 }
 //Custom event listeners
 const loginChangeListeners = {};
 const logoutChangeListeners = {};
+const matchesUpdateListeners = {};
 const on = {
   login: (listenerKey, callback) => {
     loginChangeListeners[listenerKey] = callback;
   },
   logout: (listenerKey, callback) => {
     logoutChangeListeners[listenerKey] = callback;
+  },
+  matchesUpdate: (listenerKey, callback) => {
+    matchesUpdateListeners[listenerKey] = callback;
   }
 }
 const trigger = {
   login: () => {
+    csrf.isLoggedIn = true;
     Object.values(loginChangeListeners).forEach(list => list());
   },
   logout: () => {
+    csrf.isLoggedIn = false;
     Object.values(logoutChangeListeners).forEach(list => list());
+  },
+  matchesUpdate: () => {
+    Object.values(matchesUpdateListeners).forEach(list => list());
   }
 }
 const unsubscribe = {
@@ -32,6 +46,9 @@ const unsubscribe = {
   },
   logout: (listenerKey) => {
     delete logoutChangeListeners[listenerKey];
+  },
+  matchesUpdate: (listenerKey) => {
+    delete matchesUpdateListeners[listenerKey];
   }
 }
 
@@ -96,6 +113,23 @@ const post = (url, body) => new Promise((resolve, reject) => {
   xhr.send(JSON.stringify(body));
 });
 
+const fetchWatchLaterMatches = () => {
+  return get('/getSavedMatches', {}).then((savedMatches) => {
+    watchLaterMatches = savedMatches;
+    trigger.matchesUpdate();
+  }).catch((err) => console.error(err));
+}
+on.login("watch-later", fetchWatchLaterMatches);
+
+const fetchAllMatches = () => {
+  return get('/allMatches', {}).then((games) => {
+    allMatches = games;
+    trigger.matchesUpdate();
+  }).catch((err) => console.error(err));
+}
+
+const getAllMatches = () => allMatches;
+const getWatchLaterMatches = () => watchLaterMatches;
 
 const validateToken = () => {
   return get('/checkToken', {}).then((result) => {
@@ -111,4 +145,19 @@ const validateToken = () => {
   }).catch((err) => console.error(err));
 }
 
-module.exports = { on, trigger, unsubscribe, get, post, csrf, validateToken, isLoggedIn };
+export default {
+  csrf,
+  allMatches,
+  watchLaterMatches,
+  on,
+  trigger,
+  unsubscribe,
+  get,
+  post,
+  validateToken,
+  isLoggedIn,
+  getWatchLaterMatches,
+  fetchWatchLaterMatches,
+  getAllMatches,
+  fetchAllMatches
+};

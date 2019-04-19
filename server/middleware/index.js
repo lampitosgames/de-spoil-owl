@@ -1,6 +1,6 @@
 const requiresLogin = (req, res, next) => {
   if (!req.session.account) {
-    return res.redirect('/login');
+    return res.status(401).json({ error: "Login required" });
   }
   return next();
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import './match.scss';
+import WatchLaterButton from './toggle-wl-button';
+
 
 const VideoLink = (props) => {
   return (
@@ -29,7 +31,7 @@ const Match = (props) => {
   })
   return (
     <div className="match-wrapper">
-      <h1>{props.title}</h1>
+      <h1>{props.title}<WatchLaterButton loggedIn={props.loggedIn} action={props.favoriteToggle} active={props.favorited} matchName={props.title}/></h1>
       <div className="video-wrapper">{videos}</div>
     </div>
   );

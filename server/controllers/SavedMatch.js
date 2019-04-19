@@ -18,9 +18,32 @@ const saveMatch = (req, res) => {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Match already saved.' });
     }
-    return res.status(400).json({ message: 'An error occured', error: err });
+    return res.status(500).json({ message: 'An error occured', error: err });
   });
 };
+
+const removeMatch = (req, res) => {
+  SavedMatch.SavedMatchModel.deleteMatch(req.session.account._id, req.body.title, (err, doc) => {
+    if (err) {
+      return res.status(500).json({ message: "Internal Server Error", error: err });
+    }
+    res.sendStatus(204);
+  });
+}
+
+const getSavedMatches = (req, res) => {
+  SavedMatch.SavedMatchModel.findByOwner(req.session.account._id, (err, doc) => {
+    if (err) {
+      return res.status(500).json({ message: "Internal Server Error", error: err });
+    }
+    let savedMatches = {};
+    doc.forEach((match) => {
+      const thisMatch = SavedMatch.SavedMatchModel.toAPI(match);
+      savedMatches[thisMatch.title] = thisMatch;
+    });
+    res.status(200).json(savedMatches);
+  });
+}
 
 const getAllMatches = (req, res) => {
   if (getMatches() !== {}) {
@@ -29,4 +52,4 @@ const getAllMatches = (req, res) => {
   return res.json({ error: 'No matches found' });
 };
 
-module.exports = { saveMatch, getAllMatches };
+module.exports = { saveMatch, removeMatch, getAllMatches, getSavedMatches };

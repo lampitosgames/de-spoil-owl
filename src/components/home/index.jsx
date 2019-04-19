@@ -3,12 +3,12 @@ import React from 'react';
 import Match from '../match';
 
 const initialState = {
-  loggedIn: false,
   matches: [],
-  listenerKey: "home"
+  listenerKey: "home",
+  loggedIn: false
 };
 
-const matchSort = (a, b) => {
+export const matchSort = (a, b) => {
   if (a.gameDate[0] < b.gameDate[0]) {
     return 1;
   } else if (a.gameDate[0] > b.gameDate[0]) {
@@ -37,15 +37,17 @@ export default class Home extends React.Component {
   }
 
   componentDidMount() {
-    Utils.get('/allMatches', {})
-      .then((allGames) => {
-        this.setState({ matches: Object.values(allGames).sort(matchSort) })
-      }).catch((err) => { console.error(err); });
+    Utils.fetchAllMatches();
+    Utils.on.matchesUpdate(this.state.listenerKey, () => {
+      this.setState({ matches: Object.values(Utils.getAllMatches()).sort(matchSort) });
+    });
     Utils.on.login(this.state.listenerKey, () => this.setState({ loggedIn: true }));
     Utils.on.logout(this.state.listenerKey, () => this.setState({ loggedIn: false }));
+    this.setState({ loggedIn: Utils.isLoggedIn() });
   }
 
   componentWillUnmount() {
+    Utils.unsubscribe.matchesUpdate(this.state.listenerKey);
     Utils.unsubscribe.login(this.state.listenerKey);
     Utils.unsubscribe.logout(this.state.listenerKey);
   }
@@ -57,14 +59,22 @@ export default class Home extends React.Component {
   }
 
   favoriteToggle(matchName, isFavorited) {
-    console.log("Favorited!");
+    if (!isFavorited) {
+      //If the match isn't yet favorited, save it
+      Utils.post('/saveMatch', { title: matchName }).catch((err) => console.error(err));
+    } else {
+      //If the match is favorited, remove it
+      Utils.post('/removeMatch', { title: matchName }).catch((err) => console.error(err));
+    }
+    Utils.fetchWatchLaterMatches();
   }
 
   render() {
     let matchKey = 0;
     const matchJSX = this.state.matches.map((m) => {
+      let isMatchFav = (m.title in Utils.getWatchLaterMatches());
       return (
-        <Match key={matchKey++} match={m} title={m.title} favorited={false} favoriteToggle={this.favoriteToggle.bind(this)}/>
+        <Match key={matchKey++} loggedIn={this.state.loggedIn} match={m} title={m.title} favorited={isMatchFav} favoriteToggle={this.favoriteToggle.bind(this)}/>
       )
     });
     return (

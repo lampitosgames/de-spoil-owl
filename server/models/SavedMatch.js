@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { getMatches } = require('../owl-games');
 
 mongoose.Promise = global.Promise;
 
@@ -23,16 +24,13 @@ const SavedMatchSchema = new mongoose.Schema({
   },
 });
 
-SavedMatchSchema.statics.toAPI = doc => ({
-  title: doc.title,
-  createdDate: doc.createdDate,
-});
+SavedMatchSchema.statics.toAPI = doc => (getMatches()[doc.title]);
 
 SavedMatchSchema.statics.findByOwner = (ownerId, callback) => {
   const search = {
     owner: convertId(ownerId),
   };
-  return SavedMatchModel.find(search).select('name age height').exec(callback);
+  return SavedMatchModel.find(search).select({ title: 1, owner: 1 }).exec(callback);
 };
 
 SavedMatchSchema.statics.deleteMatch = (ownerId, title, callback) => {
