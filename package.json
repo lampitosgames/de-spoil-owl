@@ -2,6 +2,7 @@
   "name": "de-spoil-owl",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "scripts": {
     "dev": "concurrently \"npm run start-client\" \"npm run start-server\"",
     "start-client": "react-scripts start",
