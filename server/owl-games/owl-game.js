@@ -109,6 +109,7 @@ class OwlMatch {
     [this.team1, this.team2] = _rawData.shortName.split("@");
     //Create the full match title from the team names
     this.title = owlMetadata.teams.shortToLong[this.team1] + " vs. " + owlMetadata.teams.shortToLong[this.team2] + " | " + _rawData.swd;
+    this.shortName = _rawData.shortName;
     //Parse the date string YYYY-MM-DD
     this.dateString = _rawData.dateString;
     //Has the match happened yet?
@@ -128,6 +129,19 @@ class OwlMatch {
   }
 }
 
+class SheetMatchData {
+  constructor(_rawData) {
+    this.title = _rawData.title;
+    this.video = _rawData.video;
+    this.thumb = _rawData.thumb;
+    this.gameDate = getStageWeekDay(this.title);
+    const teams = this.title.split(' | ')[1].split(' vs. ');
+    this.team1 = owlMetadata.teams.longToShort[teams[0]];
+    this.team2 = owlMetadata.teams.longToShort[teams[1]];
+    this.shortName = this.team1 + "@" + this.team2;
+  }
+}
+
 class OwlWatchpoint {
   constructor(_rawData) {
     this.title = _rawData.title;
@@ -140,6 +154,7 @@ class OwlWatchpoint {
 module.exports = {
   OwlGame,
   OwlMatch,
+  SheetMatchData,
   OwlWatchpoint,
   isValidMatch,
   getStageWeekDay

@@ -6,10 +6,13 @@ Notes about data coming in from the Twitch/IFTTT API:
 * Full game titles "Stage X Playoffs | Day X"
 * The actual final is titled "Stage X Final | Day X"
  */
+
+//This code is sloppy and likely needs to be redesigned for non-prototype deployment
 const {
   OwlGame,
   OwlMatch,
   OwlWatchpoint,
+  SheetMatchData
   isValidMatch,
   getStageWeekDay
 } = require('./owl-game.js');
@@ -41,14 +44,13 @@ const fullSchedule = (() => {
           //pull out date string
           let dateString = dayObj["Date"];
           let swd = s + " " + w + " " + d;
+
           //Create an array of Match objects from the array of shorthand names
-          dayObj["Games"] = dayObj["Games"].map((shortName) => {
-            return new OwlMatch({
-              swd: swd,
-              shortName: shortName,
-              dateString: dateString
-            });
+          let gamesObj = {};
+          dayObj["Games"].forEach((shortName) => {
+            gamesObj[shortName] = new OwlMatch({ swd, shortName, dateString });
           });
+          dayObj["Games"] = gamesObj;
         })
       });
     });
@@ -70,16 +72,8 @@ const makeVideoObject = (_rawData) => {
     return new OwlGame(_rawData);
   }
   if (matchReg.test(_rawData.title)) {
-    //Format raw data for insertion into schedule
-    let thisSWD = getStageWeekDay(_rawData.title);
-    const thisTeams = _rawData.title.split(' | ')[1].split(' vs. ');
-    thisTeam1 = owlMetadata.teams.longToShort[thisTeams[0]];
-    thisTeam2 = owlMetadata.teams.longToShort[thisTeams[1]];
+    let thisMatch = new SheetMatchData(_rawData);
     matches[thisMatch.title] = thisMatch;
-    //TODO: I definitely need to create a duplicate OwlMatch here
-    //  reason being that I need it to be in the videos array with the
-    //  spreadsheet title. Maybe make a seprate type of object/data structure
-    //  for this? 
     return thisMatch;
   }
   if (watchpReg.test(_rawData.title)) {
