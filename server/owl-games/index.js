@@ -11,9 +11,50 @@ const {
   OwlMatch,
   OwlWatchpoint,
   isValidMatch,
+  getStageWeekDay
 } = require('./owl-game.js');
 const { buildGameDataFromSpreadsheet } = require('./refresh-raw-data.js');
-// const owlMetadata = require('./owl-metadata.json');
+const owlMetadata = require('./owl-metadata.json');
+
+//Full schedule built with real OWL schedule data. Immediately invoked function
+// that builds the data structure that twitch data is injected into as it becomes
+// available.
+const fullSchedule = (() => {
+  let sched = {
+    ...require('./owl-schedule-2019.json')
+  };
+  //Allow expansion for future years. Will require new data to be entered
+  let years = ["2019"];
+  //For every season
+  years.forEach((y) => {
+    //For every stage
+    let stages = Object.keys(sched[y]);
+    stages.forEach((s) => {
+      //For every week in the stage
+      let weeks = Object.keys(sched[y][s]);
+      weeks.forEach((w) => {
+        //For every day in the week
+        let days = Object.keys(sched[y][s][w]);
+        days.forEach((d) => {
+          //Get data from the current day
+          let dayObj = sched[y][s][w][d];
+          //pull out date string
+          let dateString = dayObj["Date"];
+          let swd = s + " " + w + " " + d;
+          //Create an array of Match objects from the array of shorthand names
+          dayObj["Games"] = dayObj["Games"].map((shortName) => {
+            return new OwlMatch({
+              swd: swd,
+              shortName: shortName,
+              dateString: dateString
+            });
+          });
+        })
+      });
+    });
+  });
+  return sched;
+})();
 
 // When the server starts, no videos have been loaded
 const videos = {};
@@ -29,8 +70,16 @@ const makeVideoObject = (_rawData) => {
     return new OwlGame(_rawData);
   }
   if (matchReg.test(_rawData.title)) {
-    const thisMatch = new OwlMatch(_rawData);
+    //Format raw data for insertion into schedule
+    let thisSWD = getStageWeekDay(_rawData.title);
+    const thisTeams = _rawData.title.split(' | ')[1].split(' vs. ');
+    thisTeam1 = owlMetadata.teams.longToShort[thisTeams[0]];
+    thisTeam2 = owlMetadata.teams.longToShort[thisTeams[1]];
     matches[thisMatch.title] = thisMatch;
+    //TODO: I definitely need to create a duplicate OwlMatch here
+    //  reason being that I need it to be in the videos array with the
+    //  spreadsheet title. Maybe make a seprate type of object/data structure
+    //  for this? 
     return thisMatch;
   }
   if (watchpReg.test(_rawData.title)) {
@@ -48,10 +97,10 @@ const findAllMatchGames = (_match) => {
     // Only search owl games.  They're the only thing that can be children
     if (game.constructor.name !== 'OwlGame') { return; }
     if (
-      game.gameDate[0] === _match.gameDate[0]
-      && game.gameDate[1] === _match.gameDate[1]
-      && game.team1 === _match.team1
-      && game.team2 === _match.team2
+      game.gameDate[0] === _match.gameDate[0] &&
+      game.gameDate[1] === _match.gameDate[1] &&
+      game.team1 === _match.team1 &&
+      game.team2 === _match.team2
     ) {
       _match.addGame(game);
     }

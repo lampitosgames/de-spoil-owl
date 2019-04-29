@@ -81,7 +81,7 @@
         "Day 4": {
           "Date": "2019-05-05",
           "Games": ["TOR@PAR", "WAS@BOS", "SHD@SFS", "SEO@HZS"]
-        },
+        }
       },
       "Playoffs": {
         "Day 1": {
@@ -286,8 +286,7 @@
           "Date": "2019-08-25",
           "Games": ["ATL@BOS", "NYE@VAN", "HZS@SHD", "SFS@VAL"]
         }
-      },
-      "Playoffs": {}
+      }
     }
   }
 }

@@ -99,15 +99,27 @@ class OwlGame {
 
 class OwlMatch {
   constructor(_rawData) {
-    this.title = _rawData.title;
+    //Get the SWD to set as the game date [-1, -1, -1]
+    this.gameDate = getStageWeekDay(_rawData.swd);
+    //Initially has no game data. Gets injected later by API
+    this.hasGameData = false;
+    this.hasAllGameData = false;
+    this.games = [];
+    //Separate teams
+    [this.team1, this.team2] = _rawData.shortName.split("@");
+    //Create the full match title from the team names
+    this.title = owlMetadata.teams.shortToLong[this.team1] + " vs. " + owlMetadata.teams.shortToLong[this.team2] + " | " + _rawData.swd;
+    //Parse the date string YYYY-MM-DD
+    this.dateString = _rawData.dateString;
+    //Has the match happened yet?
+    this.isFutureMatch = (new Date(this.dateString)) > Date.now();
+  }
+
+  injectVodData(_rawData) {
     this.video = _rawData.video;
     this.thumb = _rawData.thumb;
-    this.gameDate = getStageWeekDay(this.title);
-    this.games = [];
-    // Get the teams
-    const teams = this.title.split(' | ')[1].split(' vs. ');
-    this.team1 = owlMetadata.teams.longToShort[teams[0]];
-    this.team2 = owlMetadata.teams.longToShort[teams[1]];
+    this.isFutureMatch = false;
+    this.hasGameData = true;
   }
 
   addGame(_game) {
@@ -130,4 +142,5 @@ module.exports = {
   OwlMatch,
   OwlWatchpoint,
   isValidMatch,
+  getStageWeekDay
 };
