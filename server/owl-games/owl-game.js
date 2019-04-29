@@ -61,22 +61,24 @@ const getStageWeekDay = (_title) => {
  * @param  {OwlMatch}  _match a built OwlMatch object to test
  * @return {Boolean}          whether or not the match was built correctly
  */
-const isValidMatch = (_match) => {
+const validateMatch = (_match) => {
   // Valid until proven otherwise
   let isValid = true;
   // Ensure it exists
   isValid = _match !== null && _match !== undefined;
-  // Does it have a valid game date?
-  isValid = _match.gameDate[0] !== -1 && _match.gameDate[1] !== -1 && _match.gameDate[2] !== -1;
-  if (!isValid) return isValid;
-  // Are both teams listed?
-  isValid = _match.team1 !== undefined && _match.team2 !== undefined;
-  if (!isValid) return isValid;
+  // Does the match have a title, video, and thumbnail?
+  _match.hasMatchData = _match.title !== "" && _match.video !== "" && _match.thumb !== "";
   // Are there at least 5 child games?
-  isValid = _match.games.length >= 5;
-  if (!isValid) return isValid;
-  return true;
+  _match.hasGameData = _match.games.length >= 5;
 };
+
+const validateTeamString = (_team) => {
+  //London is abbreviated LDN or LON.  Always use LON
+  if (_team === "LDN") { _team = "LON"; }
+  //CHD => CDH
+  if (_team === "CHD") { _team = "CDH"; }
+  return _team;
+}
 
 class OwlGame {
   constructor(_rawData) {
@@ -84,43 +86,56 @@ class OwlGame {
     this.video = _rawData.video;
     this.thumb = _rawData.thumb;
     this.gameDate = getStageWeekDay(this.title);
-    this.parentMatch = null;
+    this.parentMatch = "";
     // Get the teams
     [, , this.team1, , this.team2] = this.title.split(' ');
+    //Pass teams through validator
+    this.team1 = validateTeamString(this.team1);
+    this.team2 = validateTeamString(this.team2);
     // Get the game number
     const [titleMatch] = this.title.match(gameNumberReg);
     this.gameNumber = toNum(titleMatch.split(' ')[1]);
   }
 
   setParentMatch(_parent) {
-    this.parent = _parent.title;
+    this.parentMatch = _parent.title;
   }
 }
 
 class OwlMatch {
   constructor(_rawData) {
-    //Get the SWD to set as the game date [-1, -1, -1]
-    this.gameDate = getStageWeekDay(_rawData.swd);
-    //Initially has no game data. Gets injected later by API
-    this.hasGameData = false;
-    this.hasAllGameData = false;
+    //Init empty fields that will be set later
+    this.title = "";
+    this.video = "";
+    this.thumb = "";
     this.games = [];
-    //Separate teams
-    [this.team1, this.team2] = _rawData.shortName.split("@");
-    //Create the full match title from the team names
-    this.title = owlMetadata.teams.shortToLong[this.team1] + " vs. " + owlMetadata.teams.shortToLong[this.team2] + " | " + _rawData.swd;
-    this.shortName = _rawData.shortName;
+    //For ordering matches in a particular day
+    this.matchNum = _rawData.matchNum;
+    //Initially has no VOD data. Gets injected later
+    this.hasMatchData = false;
+    this.hasGameData = false;
     //Parse the date string YYYY-MM-DD
     this.dateString = _rawData.dateString;
     //Has the match happened yet?
     this.isFutureMatch = (new Date(this.dateString)) > Date.now();
+    //Get the stage, week, day to set as the game date
+    this.gameDate = getStageWeekDay(_rawData.swd);
+    //Pass teams through validator
+    this.team1 = validateTeamString(this.team1);
+    this.team2 = validateTeamString(this.team2);
+    //Separate teams
+    [this.team1, this.team2] = _rawData.shortName.split("@");
+    //Create the display title from the team names
+    this.displayTitle = owlMetadata.teams.shortToLong[this.team1] + " vs. " + owlMetadata.teams.shortToLong[this.team2] + " | " + _rawData.swd;
+    this.shortName = _rawData.shortName;
   }
 
-  injectVodData(_rawData) {
-    this.video = _rawData.video;
-    this.thumb = _rawData.thumb;
+  injectMatchVodData(sheetMatchData) {
+    this.title = sheetMatchData.title;
+    this.video = sheetMatchData.video;
+    this.thumb = sheetMatchData.thumb;
     this.isFutureMatch = false;
-    this.hasGameData = true;
+    this.hasMatchData = true;
   }
 
   addGame(_game) {
@@ -135,9 +150,9 @@ class SheetMatchData {
     this.video = _rawData.video;
     this.thumb = _rawData.thumb;
     this.gameDate = getStageWeekDay(this.title);
-    const teams = this.title.split(' | ')[1].split(' vs. ');
+    const teams = this.title.split(' | ')[1].split(/\s*(vs\.)\s*/);
     this.team1 = owlMetadata.teams.longToShort[teams[0]];
-    this.team2 = owlMetadata.teams.longToShort[teams[1]];
+    this.team2 = owlMetadata.teams.longToShort[teams[2]];
     this.shortName = this.team1 + "@" + this.team2;
   }
 }
@@ -156,6 +171,6 @@ module.exports = {
   OwlMatch,
   SheetMatchData,
   OwlWatchpoint,
-  isValidMatch,
+  validateMatch,
   getStageWeekDay
 };

@@ -6,19 +6,22 @@ Notes about data coming in from the Twitch/IFTTT API:
 * Full game titles "Stage X Playoffs | Day X"
 * The actual final is titled "Stage X Final | Day X"
  */
-
-//This code is sloppy and likely needs to be redesigned for non-prototype deployment
 const {
   OwlGame,
   OwlMatch,
   OwlWatchpoint,
-  SheetMatchData
-  isValidMatch,
+  SheetMatchData,
+  validateMatch,
   getStageWeekDay
 } = require('./owl-game.js');
 const { buildGameDataFromSpreadsheet } = require('./refresh-raw-data.js');
 const owlMetadata = require('./owl-metadata.json');
 
+// List of loaded videos from the excel spreadsheet
+const videos = {};
+
+// Easily iterateable flat object of matches. Created with fullSchedule
+let matches = {};
 //Full schedule built with real OWL schedule data. Immediately invoked function
 // that builds the data structure that twitch data is injected into as it becomes
 // available.
@@ -47,8 +50,9 @@ const fullSchedule = (() => {
 
           //Create an array of Match objects from the array of shorthand names
           let gamesObj = {};
+          let matchNum = 1;
           dayObj["Games"].forEach((shortName) => {
-            gamesObj[shortName] = new OwlMatch({ swd, shortName, dateString });
+            gamesObj[shortName] = matches[shortName] = new OwlMatch({ swd, shortName, dateString, matchNum: matchNum++ });
           });
           dayObj["Games"] = gamesObj;
         })
@@ -57,10 +61,6 @@ const fullSchedule = (() => {
   });
   return sched;
 })();
-
-// When the server starts, no videos have been loaded
-const videos = {};
-let matches = {};
 
 const makeVideoObject = (_rawData) => {
   // 3 different regex expressions to identify the type of video
@@ -72,8 +72,10 @@ const makeVideoObject = (_rawData) => {
     return new OwlGame(_rawData);
   }
   if (matchReg.test(_rawData.title)) {
-    let thisMatch = new SheetMatchData(_rawData);
-    matches[thisMatch.title] = thisMatch;
+    const sheetData = new SheetMatchData(_rawData);
+    let week = sheetData.gameDate[1] < 0 ? "Playoffs" : "Week " + sheetData.gameDate[1];
+    let thisMatch = matches[sheetData.shortName];
+    thisMatch.injectMatchVodData(sheetData);
     return thisMatch;
   }
   if (watchpReg.test(_rawData.title)) {
@@ -83,6 +85,8 @@ const makeVideoObject = (_rawData) => {
 };
 
 const findAllMatchGames = (_match) => {
+  // If the match is a future game, we obviously don't have data for it yet
+  if (_match.isFutureMatch) { return; }
   // If the match already has its games, return immediately
   if (_match.games.length > 0) { return; }
 
@@ -101,13 +105,21 @@ const findAllMatchGames = (_match) => {
   });
   // If the match already has at least 5 games, return. No need to pad the data
   if (_match.games.length >= 5) { return; }
+  // If there are less than 3 games, this match has incomplete metadata
+  if (_match.games.length < 3) { return; }
 
-  // Ensure there are at least 5 games, even for matches that only have 3.
+  // Ensure there are at least 5 games, even for matches that only have 3
   const fakeGameData = {
     title: '',
     video: _match.video,
     thumb: _match.thumb,
   };
+  //If the match doesn't have VOD data, replace the video and thumb attributes with those of the
+  //first valid game
+  if (!_match.hasMatchData) {
+    fakeGameData.video = _match.games[0].video;
+    fakeGameData.thumb = _match.games[0].thumb;
+  }
   // Generate a date string, taking into account playoffs/finals
   let dateString = ` | Stage ${_match.gameDate[0]}`;
   dateString += _match.gameDate[1] > 0 ? ` Week ${_match.gameDate[1]}` : ' Finals';
@@ -124,23 +136,22 @@ const findAllMatchGames = (_match) => {
 };
 
 const regenGameData = () => {
+  //Re-fetch vod data
   buildGameDataFromSpreadsheet(Object.values(videos)).then((rawDataArr) => {
-    matches = {};
+    //Create javascript objects from each VOD
     rawDataArr.forEach((rawData) => {
       const thisVid = makeVideoObject(rawData);
       videos[thisVid.title] = thisVid;
     });
+    //After all new videos have been processed, re-check for new match data
     Object.values(matches).forEach((match) => {
       findAllMatchGames(match);
-      // Ensure that the match's data was built correctly
-      if (!isValidMatch(match)) {
-        // If it was not built correctly, delete it
-        delete matches[match.title];
-      }
+      validateMatch(match);
     });
   });
 };
 
 const getMatches = () => matches;
+const getFullSchedule = () => fullSchedule;
 
-module.exports = { regenGameData, getMatches };
+module.exports = { regenGameData, getMatches, getFullSchedule };

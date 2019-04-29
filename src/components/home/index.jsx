@@ -72,9 +72,11 @@ export default class Home extends React.Component {
   render() {
     let matchKey = 0;
     const matchJSX = this.state.matches.map((m) => {
+      console.dir(m);
+      if (m.isFutureMatch) { return; }
       let isMatchFav = (m.title in Utils.getWatchLaterMatches());
       return (
-        <Match key={matchKey++} loggedIn={this.state.loggedIn} match={m} title={m.title} favorited={isMatchFav} favoriteToggle={this.favoriteToggle.bind(this)}/>
+        <Match key={matchKey++} loggedIn={this.state.loggedIn} match={m} title={m.displayTitle} favorited={isMatchFav} favoriteToggle={this.favoriteToggle.bind(this)}/>
       )
     });
     return (
