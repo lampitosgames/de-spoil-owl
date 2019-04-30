@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import Match from '../match';
-import { matchSort } from '../home-old';
+import { matchSort } from '../home';
 import Utils from '../../utils';
 import './watch-later.scss';
 

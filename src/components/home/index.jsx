@@ -9,6 +9,33 @@ const initialState = {
   loggedIn: false
 };
 
+export const matchSort = (a, b) => {
+  if (a.gameDate[0] < b.gameDate[0]) {
+    return 1;
+  } else if (a.gameDate[0] > b.gameDate[0]) {
+    return -1;
+  }
+  //Check week
+  if (a.gameDate[1] < b.gameDate[1]) {
+    return 1;
+  } else if (a.gameDate[1] > b.gameDate[1]) {
+    return -1;
+  }
+  //Check day
+  if (a.gameDate[2] < b.gameDate[2]) {
+    return 1;
+  } else if (a.gameDate[2] > b.gameDate[2]) {
+    return -1;
+  }
+  //Check same-day matches for order
+  if (a.matchNum < b.matchNum) {
+    return 1;
+  } else if (a.matchNum > b.matchNum) {
+    return -1;
+  }
+  return 0;
+}
+
 export default class Home extends React.Component {
   constructor() {
     super();
