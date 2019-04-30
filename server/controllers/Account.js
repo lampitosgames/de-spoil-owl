@@ -45,7 +45,7 @@ const signup = (req, res) => {
       req.session.account = Account.AccountModel.toAPI(newAccount);
       res.status(204).end();
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
       if (err.code === 11000) {
         return res.status(400).json({ error: 'Username already in use' });
       }

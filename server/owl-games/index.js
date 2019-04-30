@@ -12,51 +12,56 @@ const {
   OwlWatchpoint,
   SheetMatchData,
   validateMatch,
-  getStageWeekDay
 } = require('./owl-game.js');
 const { buildGameDataFromSpreadsheet } = require('./refresh-raw-data.js');
-const owlMetadata = require('./owl-metadata.json');
+const sched2019 = require('./owl-schedule-2019.json');
 
 // List of loaded videos from the excel spreadsheet
 const videos = {};
 
 // Easily iterateable flat object of matches. Created with fullSchedule
-let matches = {};
-//Full schedule built with real OWL schedule data. Immediately invoked function
+const matches = {};
+// Full schedule built with real OWL schedule data. Immediately invoked function
 // that builds the data structure that twitch data is injected into as it becomes
 // available.
 const fullSchedule = (() => {
-  let sched = {
-    ...require('./owl-schedule-2019.json')
+  const sched = {
+    ...sched2019,
   };
-  //Allow expansion for future years. Will require new data to be entered
-  let years = ["2019"];
-  //For every season
+  // Allow expansion for future years. Will require new data to be entered
+  const years = ['2019'];
+  // For every season
   years.forEach((y) => {
-    //For every stage
-    let stages = Object.keys(sched[y]);
+    // For every stage
+    const stages = Object.keys(sched[y]);
     stages.forEach((s) => {
-      //For every week in the stage
-      let weeks = Object.keys(sched[y][s]);
+      // For every week in the stage
+      const weeks = Object.keys(sched[y][s]);
       weeks.forEach((w) => {
-        //For every day in the week
-        let days = Object.keys(sched[y][s][w]);
+        // For every day in the week
+        const days = Object.keys(sched[y][s][w]);
         days.forEach((d) => {
-          //Get data from the current day
-          let dayObj = sched[y][s][w][d];
-          //pull out date string
-          let dateString = dayObj["Date"];
-          let swd = s + " " + w + " " + d;
+          // Get data from the current day
+          const dayObj = sched[y][s][w][d];
+          // pull out date string
+          const dateString = dayObj.Date;
+          const swd = `${s} ${w} ${d}`;
 
-          //Create an array of Match objects from the array of shorthand names
-          let gamesObj = {};
+          // Create an array of Match objects from the array of shorthand names
+          const gamesObj = {};
           let matchNum = 1;
-          dayObj["Games"].forEach((shortName) => {
-            let thisMatch = new OwlMatch({ swd, shortName, dateString, matchNum: matchNum++ });
-            gamesObj[shortName] = matches[thisMatch.displayTitle] = thisMatch;
+          dayObj.Games.forEach((shortName) => {
+            const thisMatch = new OwlMatch({
+              swd,
+              shortName,
+              dateString,
+              matchNum: matchNum++,
+            });
+            gamesObj[shortName] = thisMatch;
+            matches[thisMatch.displayTitle] = thisMatch;
           });
-          dayObj["Games"] = gamesObj;
-        })
+          dayObj.Games = gamesObj;
+        });
       });
     });
   });
@@ -74,7 +79,7 @@ const makeVideoObject = (_rawData) => {
   }
   if (matchReg.test(_rawData.title)) {
     const sheetData = new SheetMatchData(_rawData);
-    let thisMatch = matches[sheetData.displayTitle];
+    const thisMatch = matches[sheetData.displayTitle];
     if (thisMatch !== undefined) {
       thisMatch.injectMatchVodData(sheetData);
       return thisMatch;
@@ -97,10 +102,10 @@ const findAllMatchGames = (_match) => {
     // Only search owl games.  They're the only thing that can be children
     if (game.constructor.name !== 'OwlGame') { return; }
     if (
-      game.gameDate[0] === _match.gameDate[0] &&
-      game.gameDate[1] === _match.gameDate[1] &&
-      game.team1 === _match.team1 &&
-      game.team2 === _match.team2
+      game.gameDate[0] === _match.gameDate[0]
+      && game.gameDate[1] === _match.gameDate[1]
+      && game.team1 === _match.team1
+      && game.team2 === _match.team2
     ) {
       _match.addGame(game);
     }
@@ -116,8 +121,8 @@ const findAllMatchGames = (_match) => {
     video: _match.video,
     thumb: _match.thumb,
   };
-  //If the match doesn't have VOD data, replace the video and thumb attributes with those of the
-  //first valid game
+  // If the match doesn't have VOD data, replace the video and thumb attributes with those of the
+  // first valid game
   if (!_match.hasMatchData) {
     fakeGameData.video = _match.games[0].video;
     fakeGameData.thumb = _match.games[0].thumb;
@@ -138,16 +143,16 @@ const findAllMatchGames = (_match) => {
 };
 
 const regenGameData = () => {
-  //Re-fetch vod data
+  // Re-fetch vod data
   buildGameDataFromSpreadsheet(Object.values(videos)).then((rawDataArr) => {
-    //Create javascript objects from each VOD
+    // Create javascript objects from each VOD
     rawDataArr.forEach((rawData) => {
       const thisVid = makeVideoObject(rawData);
       if (thisVid !== null) {
         videos[thisVid.title] = thisVid;
       }
     });
-    //After all new videos have been processed, re-check for new match data
+    // After all new videos have been processed, re-check for new match data
     Object.values(matches).forEach((match) => {
       findAllMatchGames(match);
       validateMatch(match);
