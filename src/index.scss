@@ -1,6 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:400,700');
 @font-face {
   font-family: 'Big Noodle';
-  src: url("./big_noodle_titling_oblique.ttf") format('truetype');
+  src: url("./assets/big_noodle_titling_oblique.ttf") format('truetype');
 }
 
 body {
@@ -13,4 +14,8 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.noselect {
+  user-select: none;
 }

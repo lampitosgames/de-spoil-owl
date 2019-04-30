@@ -1,7 +1,7 @@
 import React from 'react';
 import './match.scss';
 import WatchLaterButton from './toggle-wl-button';
-
+import Utils from '../../utils';
 
 const VideoLink = (props) => {
   return (
@@ -28,10 +28,19 @@ const Match = (props) => {
         <div className="single-game-name" >Game {game.gameNumber}</div>
       </div>
     );
-  })
+  });
+
+  let isMatchFav = (props.match.displayTitle in Utils.getWatchLaterMatches());
+
+  let [matchTitle] = props.match.displayTitle.split(" | ");
+  let upcomingText = props.match.isFutureMatch ? <span className="match-future">Upcoming Match</span> : "";
   return (
     <div className="match-wrapper">
-      <h1>{props.title}<WatchLaterButton loggedIn={props.loggedIn} action={props.favoriteToggle} active={props.favorited} matchName={props.title}/></h1>
+      <div className="match-title">
+        <span className="match-title-text">{matchTitle}</span>
+        {upcomingText}
+        <WatchLaterButton loggedIn={props.loggedIn} action={props.favTog} active={isMatchFav} matchName={props.match.displayTitle}/>
+      </div>
       <div className="video-wrapper">{videos}</div>
     </div>
   );

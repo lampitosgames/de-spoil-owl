@@ -1,14 +1,15 @@
 import React from 'react';
-import ShapeCirclePlusIcon from 'mdi-react/ShapeCirclePlusIcon';
-import CloseCircleOutlineIcon from 'mdi-react/CloseCircleOutlineIcon';
+import StarIcon from 'mdi-react/StarIcon';
+import StarOutlineIcon from 'mdi-react/StarOutlineIcon';
 
 const WatchLaterButton = (props) => {
   if (!props.loggedIn) {
     return "";
   }
-  const displayIcon = props.active ? <CloseCircleOutlineIcon size="2rem"/> : <ShapeCirclePlusIcon size="2rem" />;
+  const displayIcon = props.active ? <StarIcon size="3rem"/> : <StarOutlineIcon size="3rem" />;
+  const classes = props.active ? "watch-later-button active-button" : "watch-later-button";
   return (
-    <span className="button" onClick={() => {props.action(props.matchName, props.active);}}>
+    <span className={classes} onClick={() => {props.action(props.matchName, props.active);}}>
       {displayIcon}
     </span>
   )

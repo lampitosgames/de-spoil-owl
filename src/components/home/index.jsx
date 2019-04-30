@@ -1,45 +1,24 @@
 import Utils from '../../utils';
 import React from 'react';
-import Match from '../match';
+import { Stage } from './stage-week-day';
+import './home.scss';
 
 const initialState = {
-  matches: [],
+  matchData: {},
   listenerKey: "home",
   loggedIn: false
 };
-
-export const matchSort = (a, b) => {
-  if (a.gameDate[0] < b.gameDate[0]) {
-    return 1;
-  } else if (a.gameDate[0] > b.gameDate[0]) {
-    return -1;
-  }
-  //Check week
-  if (a.gameDate[1] < b.gameDate[1]) {
-    return 1;
-  } else if (a.gameDate[1] > b.gameDate[1]) {
-    return -1;
-  }
-  //Check day
-  if (a.gameDate[2] < b.gameDate[2]) {
-    return 1;
-  } else if (a.gameDate[2] > b.gameDate[2]) {
-    return -1;
-  }
-  return 0;
-}
 
 export default class Home extends React.Component {
   constructor() {
     super();
     this.state = initialState;
-    this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentDidMount() {
     Utils.fetchAllMatches();
     Utils.on.matchesUpdate(this.state.listenerKey, () => {
-      this.setState({ matches: Object.values(Utils.getAllMatches()).sort(matchSort) });
+      this.setState({ matchData: Utils.getAllMatches() });
     });
     Utils.on.login(this.state.listenerKey, () => this.setState({ loggedIn: true }));
     Utils.on.logout(this.state.listenerKey, () => this.setState({ loggedIn: false }));
@@ -50,12 +29,6 @@ export default class Home extends React.Component {
     Utils.unsubscribe.matchesUpdate(this.state.listenerKey);
     Utils.unsubscribe.login(this.state.listenerKey);
     Utils.unsubscribe.logout(this.state.listenerKey);
-  }
-
-  handleLogout() {
-    Utils.get('/logout', {}).then(() => {
-      Utils.trigger.logout();
-    }).catch((err) => { console.dir(err); })
   }
 
   favoriteToggle(matchName, isFavorited) {
@@ -70,19 +43,12 @@ export default class Home extends React.Component {
   }
 
   render() {
-    let matchKey = 0;
-    const matchJSX = this.state.matches.map((m) => {
-      console.dir(m);
-      if (m.isFutureMatch) { return; }
-      let isMatchFav = (m.title in Utils.getWatchLaterMatches());
-      return (
-        <Match key={matchKey++} loggedIn={this.state.loggedIn} match={m} title={m.displayTitle} favorited={isMatchFav} favoriteToggle={this.favoriteToggle.bind(this)}/>
-      )
+    const stages = Object.keys(this.state.matchData).map((stage) => {
+      return <Stage key={stage} stageName={stage} stageData={this.state.matchData[stage]} favTog={this.favoriteToggle.bind(this)} loggedIn={this.state.loggedIn}/>
     });
     return (
-      <div>
-        {matchJSX}
-      </div>
-    )
+      <div className="home-content noselect">
+        {stages}
+      </div>);
   }
 }

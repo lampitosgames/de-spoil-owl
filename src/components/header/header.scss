@@ -1,3 +1,5 @@
+@import '../../utils/colors.scss';
+
 .site-header {
   width: 100%;
   display: flex;
@@ -17,5 +19,5 @@
 }
 
 .header-link:hover {
-  color: #ff8900;
+  color: $owl-orange;
 }

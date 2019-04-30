@@ -1,5 +1,26 @@
+@import '../../utils/colors.scss';
+
 .match-wrapper {
-  margin-bottom: 6rem;
+  margin-bottom: 0;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.match-wrapper:hover {
+  border-left: 3px solid $owl-orange;
+}
+
+.match-title {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.match-title-text {
+  flex: 1;
+  font-size: 1.5rem;
 }
 
 .video-wrapper {
@@ -20,6 +41,26 @@
 }
 
 .single-game-name {
-  font-size: 2rem;
+  font-size: 1rem;
   text-align: center;
+}
+
+.watch-later-button {
+  color: $owl-black;
+  cursor: pointer;
+}
+
+.watch-later-button:hover {
+  color: $owl-orange;
+}
+
+.watch-later-button.active-button {
+  color: $owl-orange;
+}
+
+.match-future {
+  font-size: 2rem;
+  font-familY: "Big Noodle", sans-serif;
+  color: #bbb;
+  padding-right: 1rem;
 }

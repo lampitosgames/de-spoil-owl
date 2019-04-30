@@ -1,8 +1,9 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import Match from '../match';
-import { matchSort } from '../home';
+import { matchSort } from '../home-old';
 import Utils from '../../utils';
+import './watch-later.scss';
 
 const initialState = {
   loggedOut: false,
@@ -40,13 +41,13 @@ export default class WatchLater extends React.Component {
     }
     if (this.state.matches.length === 0) {
       return (
-        <h3>No matches saved</h3>
+        <div className="no-matches-saved">No matches saved</div>
       );
     }
     let matchKey = 0;
     const matchJSX = this.state.matches.map((m) => {
       return (
-        <Match key={matchKey++} loggedIn={true} match={m} title={m.title} favorited={true} favoriteToggle={this.favoriteToggle.bind(this)}/>
+        <Match key={m.shortName} match={m} favTog={this.favoriteToggle.bind(this)} favorited={true} loggedIn={true}/>
       )
     });
     return (

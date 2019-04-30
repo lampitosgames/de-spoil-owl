@@ -123,7 +123,9 @@ on.login("watch-later", fetchWatchLaterMatches);
 
 const fetchAllMatches = () => {
   return get('/allMatches', {}).then((games) => {
-    allMatches = games;
+    allMatches = {
+      ...games["2019"]
+    };
     trigger.matchesUpdate();
   }).catch((err) => console.error(err));
 }

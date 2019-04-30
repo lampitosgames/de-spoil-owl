@@ -52,7 +52,8 @@ const fullSchedule = (() => {
           let gamesObj = {};
           let matchNum = 1;
           dayObj["Games"].forEach((shortName) => {
-            gamesObj[shortName] = matches[shortName] = new OwlMatch({ swd, shortName, dateString, matchNum: matchNum++ });
+            let thisMatch = new OwlMatch({ swd, shortName, dateString, matchNum: matchNum++ });
+            gamesObj[shortName] = matches[thisMatch.displayTitle] = thisMatch;
           });
           dayObj["Games"] = gamesObj;
         })
@@ -73,10 +74,11 @@ const makeVideoObject = (_rawData) => {
   }
   if (matchReg.test(_rawData.title)) {
     const sheetData = new SheetMatchData(_rawData);
-    let week = sheetData.gameDate[1] < 0 ? "Playoffs" : "Week " + sheetData.gameDate[1];
-    let thisMatch = matches[sheetData.shortName];
-    thisMatch.injectMatchVodData(sheetData);
-    return thisMatch;
+    let thisMatch = matches[sheetData.displayTitle];
+    if (thisMatch !== undefined) {
+      thisMatch.injectMatchVodData(sheetData);
+      return thisMatch;
+    }
   }
   if (watchpReg.test(_rawData.title)) {
     return new OwlWatchpoint(_rawData);
@@ -141,7 +143,9 @@ const regenGameData = () => {
     //Create javascript objects from each VOD
     rawDataArr.forEach((rawData) => {
       const thisVid = makeVideoObject(rawData);
-      videos[thisVid.title] = thisVid;
+      if (thisVid !== null) {
+        videos[thisVid.title] = thisVid;
+      }
     });
     //After all new videos have been processed, re-check for new match data
     Object.values(matches).forEach((match) => {

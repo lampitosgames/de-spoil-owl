@@ -24,7 +24,10 @@ const SavedMatchSchema = new mongoose.Schema({
   },
 });
 
-SavedMatchSchema.statics.toAPI = doc => (getMatches()[doc.title]);
+SavedMatchSchema.statics.toAPI = doc => {
+  console.dir(doc.title);
+  return getMatches()[doc.title];
+}
 
 SavedMatchSchema.statics.findByOwner = (ownerId, callback) => {
   const search = {

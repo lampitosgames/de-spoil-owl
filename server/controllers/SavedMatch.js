@@ -1,5 +1,5 @@
 const models = require('../models');
-const { getMatches } = require('../owl-games');
+const { getMatches, getFullSchedule } = require('../owl-games');
 
 const { SavedMatch } = models;
 
@@ -39,7 +39,9 @@ const getSavedMatches = (req, res) => {
     const savedMatches = {};
     doc.forEach((match) => {
       const thisMatch = SavedMatch.SavedMatchModel.toAPI(match);
-      savedMatches[thisMatch.title] = thisMatch;
+      if (thisMatch !== undefined) {
+        savedMatches[thisMatch.displayTitle] = thisMatch;
+      }
     });
     return res.status(200).json(savedMatches);
   });
@@ -47,7 +49,7 @@ const getSavedMatches = (req, res) => {
 
 const getAllMatches = (req, res) => {
   if (getMatches() !== {}) {
-    return res.json(getMatches());
+    return res.json(getFullSchedule());
   }
   return res.json({ error: 'No matches found' });
 };

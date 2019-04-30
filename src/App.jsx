@@ -12,7 +12,7 @@ import NotFound from './components/page-not-found';
 
 const AppRouter = () => (
   <Router>
-    <div>
+    <div className="app-wrapper">
       <Header />
       <Switch>
         <Route exact path="/" component={Home} />

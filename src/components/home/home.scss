@@ -1,0 +1,74 @@
+@import '../../utils/colors.scss';
+
+.home-content {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.stage-container {
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.stage-container__trigger {
+  font-size: 2rem;
+  font-weight: 700;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  color: $owl-black;
+  margin-bottom: 3px;
+}
+
+.stage-container__trigger.is-open,
+.stage-container__trigger:hover {
+  color: $owl-orange;
+  border-bottom: 3px solid $owl-orange;
+  margin-bottom: 0;
+}
+
+.stage-inner-div {
+  width: 100%;
+}
+
+.collapsible-icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.week-container {
+  cursor: pointer;
+  padding: 0.75rem 0;
+}
+
+.week-container__trigger {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: inline-block;
+  width: 100%;
+  color: $owl-black;
+}
+
+.week-container__trigger.is-open,
+.week-container__trigger:hover {
+  color: $owl-orange;
+}
+
+.day-container {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.day-container__trigger {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: inline-block;
+  width: 100%;
+  color: $owl-black;
+}
+
+.day-container__trigger.is-open,
+.day-container__trigger:hover {
+  color: $owl-orange;
+}

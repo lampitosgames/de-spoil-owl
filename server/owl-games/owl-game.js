@@ -153,6 +153,9 @@ class SheetMatchData {
     const teams = this.title.split(' | ')[1].split(/\s*(vs\.)\s*/);
     this.team1 = owlMetadata.teams.longToShort[teams[0]];
     this.team2 = owlMetadata.teams.longToShort[teams[2]];
+    let week = this.gameDate[1] < 0 ? "Playoffs" : " Week " + this.gameDate[1];
+    let swd = "Stage " + this.gameDate[0] + week + " Day " + this.gameDate[2];
+    this.displayTitle = owlMetadata.teams.shortToLong[this.team1] + " vs. " + owlMetadata.teams.shortToLong[this.team2] + " | " + swd;
     this.shortName = this.team1 + "@" + this.team2;
   }
 }
